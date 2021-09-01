@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
@@ -63,16 +64,23 @@ class _MyAppState extends State<MyApp> {
         new NotificationSettingsIOS(sound: true, alert: true, badge: true));
 
     // Platform messages may fail, so we use a try/catch PlatformException.
-    jpush.getRegistrationID().then((rid) {
-      print("flutter get registration id : $rid");
-      setState(() {
-        debugLable = "flutter getRegistrationID: $rid";
-      });
-    });
 
-    jpush.getAppleAPNsToken().then((token){
-      print("flutter get apns id : $token");
-    });
+    try {
+      jpush.getRegistrationID().then((rid) {
+        print("flutter get registration id : $rid");
+        setState(() {
+          debugLable = "flutter getRegistrationID: $rid";
+        });
+      });
+    } catch (e) {
+      print("flutter get registration id failed : $e");
+    }
+
+    if (Platform.isIOS) {
+      jpush.getAppleAPNsToken().then((token) {
+        print("flutter get apns id : $token");
+      });
+    }
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
